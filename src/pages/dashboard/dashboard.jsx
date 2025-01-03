@@ -14,11 +14,11 @@ import {
   Search,
   Settings,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate hook for navigation
+import { useNavigate } from "react-router-dom";
 
-const DashboardSummmary = [
+const DashboardSummary = [
   {
-    label: "Completed FLights",
+    label: "Completed Flights",
     number: 125,
     icon: <ArrowLightUp />,
     mainIcon: <Verified />,
@@ -29,7 +29,7 @@ const DashboardSummmary = [
     number: 80,
     icon: <ArrowLightUp />,
     mainIcon: <FlyingFlight />,
-    percentage: "3.68",
+    percentage: "3.68%",
   },
   {
     label: "Cancelled Flights",
@@ -45,27 +45,49 @@ const DashboardSummmary = [
     mainIcon: <Dollor />,
     percentage: "5.94%",
   },
+  {
+    label: "New Bookings",
+    number: 45,
+    icon: <ArrowLightUp />,
+    mainIcon: <FlyingFlight />,
+    percentage: "2.10%",
+  },
+];
+
+const QuickLinks = [
+  { label: "Search Flights", href: "/dashboard/booking-management/flights" },
+  { label: "Manage Bookings", href: "/dashboard/booking-management/hotels" },
+  { label: "Visa Applications", href: "/dashboard/booking-management/visa-services" },
+  { label: "Expense Reports", href: "/dashboard/report-and-analytics/revenue-report" },
+];
+
+const RecentActivities = [
+  { user: "Alice Johnson", activity: "Booked a flight to Paris", time: "2h ago" },
+  { user: "Bob Smith", activity: "Cancelled hotel booking", time: "4h ago" },
+  { user: "Eve Adams", activity: "Applied for a visa", time: "1d ago" },
 ];
 
 export default function Dashboard() {
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
 
-  // Function to handle profile click
   const handleProfileClick = () => {
-    navigate("/userprofile"); // Navigate to the profile page
+    navigate("/userprofile");
+  };
+
+  const handleSettingsClick = () => {
+    navigate("/dashboard/settings");
   };
 
   return (
     <section className="flex flex-col gap-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">Dashboard</h1>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-            <Search className="font-thin" size={15} />
+            <Search size={15} />
             <input
               type="search"
-              name=""
-              id=""
               placeholder="Search anything"
               className="outline-none bg-transparent"
             />
@@ -73,8 +95,13 @@ export default function Dashboard() {
           <Button size="icon" className="bg-white text-neutral-700">
             <BellDot size={20} />
           </Button>
-
-          <div className="flex items-center gap-3 cursor-pointer" onClick={handleProfileClick}>
+          <Button size="icon" className="bg-white text-neutral-700" onClick={handleSettingsClick}>
+            <Settings size={20} />
+          </Button>
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={handleProfileClick}
+          >
             <div className="w-10 h-10 bg-orange-400/50 rounded-xl" />
             <div>
               <p className="text-sm">Martin Septimus</p>
@@ -84,11 +111,13 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        {DashboardSummmary.map((el) => (
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-5 gap-4">
+        {DashboardSummary.map((el) => (
           <div
             key={el.label}
-            className="flex justify-between items-center bg-white rounded-xl p-4"
+            className="flex justify-between items-center bg-white rounded-xl p-4 shadow-sm"
           >
             <div className="flex flex-col gap-1">
               <p className="text-xs text-neutral-400">{el.label}</p>
@@ -98,11 +127,37 @@ export default function Dashboard() {
                 <span>{el.percentage}</span>
               </div>
             </div>
-            <div className="rounded-full bg-orange-400 w-fit p-2">
-              {el.mainIcon}
-            </div>
+            <div className="rounded-full bg-orange-400 w-fit p-2">{el.mainIcon}</div>
           </div>
         ))}
+      </div>
+
+      {/* Quick Links */}
+      <div className="bg-white rounded-xl p-4 shadow-md">
+        <h2 className="text-md font-semibold mb-2">Quick Links</h2>
+        <div className="flex gap-4">
+          {QuickLinks.map((link) => (
+            <Button
+              key={link.label}
+              variant="outline"
+              onClick={() => navigate(link.href)}
+            >
+              {link.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Activities */}
+      <div className="bg-white rounded-xl p-4 shadow-md">
+        <h2 className="text-md font-semibold mb-2">Recent Activities</h2>
+        <ul className="text-sm">
+          {RecentActivities.map((activity, index) => (
+            <li key={index} className="py-1">
+              <strong>{activity.user}</strong> - {activity.activity} <span className="text-gray-400">({activity.time})</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
