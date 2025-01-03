@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { useNavigate } from "react-router-dom";
-
 import {
   BellDot,
   ChevronDown,
@@ -12,8 +11,6 @@ import {
   Download,
   Eye,
   Edit,
-  Save,
-  X,
 } from "lucide-react";
 import {
   Table,
@@ -58,23 +55,21 @@ export default function Flights() {
   const [flightSearch, setFlightSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [filteredBookings, setFilteredBookings] = useState(bookingsData);
-  const [editingBooking, setEditingBooking] = useState(null); // Track booking being edited
-
-  // Handle search
-  const handleSearch = (e) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    filterBookings(term, flightSearch, statusFilter);
-  };
-
-  const handleFlightSearch = (e) => {
-    const term = e.target.value;
-    setFlightSearch(term);
-    filterBookings(searchTerm, term, statusFilter);
-  };
-
+  const [editingBooking, setEditingBooking] = useState(null);
 
   const navigate = useNavigate();
+
+  const handleFilter = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'searchTerm') {
+      setSearchTerm(value);
+      filterBookings(value, flightSearch, statusFilter);
+    } else if (name === 'flightSearch') {
+      setFlightSearch(value);
+      filterBookings(searchTerm, value, statusFilter);
+    }
+  };
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -95,18 +90,15 @@ export default function Flights() {
     setFilteredBookings(filtered);
   };
 
-  // Open Edit Modal
-  const handleManageBooking = (booking) => {
+  const handleEditBooking = (booking) => {
     setEditingBooking({ ...booking });
   };
 
-  // Handle input changes in Edit Modal
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditingBooking((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Save Edited Booking
   const handleSaveBooking = () => {
     setFilteredBookings((prev) =>
       prev.map((booking) =>
@@ -117,9 +109,12 @@ export default function Flights() {
     alert("Booking updated successfully!");
   };
 
-  // Close Modal
   const handleCloseModal = () => {
     setEditingBooking(null);
+  };
+
+  const handleProfileClick = () => {
+    navigate("/userprofile");
   };
 
   return (
@@ -132,9 +127,10 @@ export default function Flights() {
             <Search size={15} />
             <input
               type="search"
+              name="searchTerm"
               placeholder="Search by Customer Name"
               value={searchTerm}
-              onChange={handleSearch}
+              onChange={handleFilter}
               className="outline-none bg-transparent"
             />
           </div>
@@ -147,35 +143,42 @@ export default function Flights() {
           <Button size="icon" className="bg-white text-neutral-700">
             <Settings size={20} />
           </Button>
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={handleProfileClick}
+          >
+            <div className="w-10 h-10 bg-orange-400/50 rounded-xl" />
+            <div>
+              <p className="text-sm">Martin Septimus</p>
+              <p className="text-xs text-neutral-400">Admin</p>
+            </div>
+            <ChevronDown size={20} />
+          </div>
         </div>
       </div>
 
       {/* Filters */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-          <Search size={15} />
-          <input
-            type="search"
-            placeholder="Search by Flight No"
-            value={flightSearch}
-            onChange={handleFlightSearch}
-            className="outline-none bg-transparent"
-          />
-        </div>
         <div className="flex items-center gap-4">
           {["All", "Confirmed", "Pending", "Cancelled"].map((status) => (
             <button
               key={status}
               onClick={() => handleStatusFilter(status)}
-              className={`flex items-center gap-1 ${
-                statusFilter === status ? "font-bold" : "text-neutral-400"
-              }`}
+              className={`flex items-center gap-1 ${statusFilter === status ? "font-bold" : "text-neutral-400"}`}
             >
               <Filter />
               <span className="text-sm">{status}</span>
             </button>
           ))}
-          <Button className="flex items-center gap-3" onClick={() => navigate("/dashboard/booking-management/addflights")}>
+          <button className="flex items-center gap-1 text-neutral-400">
+            <CalendarIcon />
+            <span className="text-sm">1-8 July 2024</span>
+            <ChevronDown size={14} />
+          </button>
+          <Button
+            className="flex items-center gap-3"
+            onClick={() => navigate("/dashboard/booking-management/addflights")}
+          >
             <Plus size={15} />
             Add booking
           </Button>
@@ -187,42 +190,33 @@ export default function Flights() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Book ID</TableHead>
-              <TableHead>Customer Name</TableHead>
-              <TableHead>Flight No</TableHead>
-              <TableHead>Airline</TableHead>
-              <TableHead>Route</TableHead>
-              <TableHead>Departure</TableHead>
-              <TableHead>Arrival</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Total Passengers</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              {[
+                "Book ID",
+                "Customer Name",
+                "Flight No",
+                "Airline",
+                "Route",
+                "Departure",
+                "Arrival",
+                "Date",
+                "Total Passengers",
+                "Status",
+                "Actions",
+              ].map((head) => (
+                <TableHead key={head}>{head}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredBookings.map((booking) => (
               <TableRow key={booking.booking}>
-                <TableCell>{booking.booking}</TableCell>
-                <TableCell>{booking.customerName}</TableCell>
-                <TableCell>{booking.flightNo}</TableCell>
-                <TableCell>{booking.airline}</TableCell>
-                <TableCell>{booking.route}</TableCell>
-                <TableCell>{booking.departure}</TableCell>
-                <TableCell>{booking.arrival}</TableCell>
-                <TableCell>{booking.date}</TableCell>
-                <TableCell>{booking.totalPassengers}</TableCell>
-                <TableCell>{booking.status}</TableCell>
+                {Object.values(booking).map((value, index) => (
+                  <TableCell key={index}>{value}</TableCell>
+                ))}
                 <TableCell>
-                  <Button >
-                    <Eye size={15}  /> View
-                  </Button>
-                  <Button>
-                    <Download size={15} /> Download
-                  </Button>
-                  <Button onClick={() => handleManageBooking(booking)}>
-                    <Edit size={15} /> Edit
-                  </Button>
+                  <Button><Eye size={15} /> View</Button>
+                  <Button><Download size={15} /> Download</Button>
+                  <Button onClick={() => handleEditBooking(booking)}><Edit size={15} /> Edit</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -230,27 +224,73 @@ export default function Flights() {
         </Table>
       </div>
 
-      {/* Edit Modal */}
       {editingBooking && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96 space-y-2">
-            {Object.keys(editingBooking).map((key) => (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl w-1/3">
+            <h2 className="text-lg font-semibold mb-4">Edit Booking</h2>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Customer Name</label>
               <input
-                key={key}
-                name={key}
-                value={editingBooking[key]}
+                type="text"
+                name="customerName"
+                value={editingBooking.customerName}
                 onChange={handleEditChange}
-                placeholder={key}
-                className="border p-2 w-full"
+                className="w-full p-2 border rounded-md"
               />
-            ))}
-            <div className="flex justify-end gap-2">
-              <Button onClick={handleCloseModal} variant="outline">
-                <X /> Cancel
-              </Button>
-              <Button onClick={handleSaveBooking}>
-                <Save /> Save
-              </Button>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Flight No</label>
+              <input
+                type="text"
+                name="flightNo"
+                value={editingBooking.flightNo}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Airline</label>
+              <input
+                type="text"
+                name="airline"
+                value={editingBooking.airline}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Route</label>
+              <input
+                type="text"
+                name="route"
+                value={editingBooking.route}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Departure</label>
+              <input
+                type="text"
+                name="departure"
+                value={editingBooking.departure}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Arrival</label>
+              <input
+                type="text"
+                name="arrival"
+                value={editingBooking.arrival}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="flex gap-4">
+              <Button onClick={handleSaveBooking}>Save</Button>
+              <Button onClick={handleCloseModal}>Cancel</Button>
             </div>
           </div>
         </div>

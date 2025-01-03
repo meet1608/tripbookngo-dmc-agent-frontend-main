@@ -1,10 +1,13 @@
 import { Button } from "../../../components/ui/button";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BellDot,
   ChevronDown,
   CircleHelp,
   Search,
   Settings,
+  Filter,
 } from "lucide-react";
 import {
   Table,
@@ -49,20 +52,55 @@ const admins = [
     role: "Admin",
     status: "Active",
   },
-  // Add more admin details as necessary
 ];
 
 export default function Admins() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [filteredAdmins, setFilteredAdmins] = useState(admins);
+
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    filterAdmins(term, statusFilter);
+  };
+
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+    filterAdmins(searchTerm, status);
+  };
+
+  const filterAdmins = (nameTerm, status) => {
+    let filtered = admins.filter((admin) =>
+      admin.name.toLowerCase().includes(nameTerm.toLowerCase())
+    );
+
+    if (status !== "All") {
+      filtered = filtered.filter((admin) => admin.status === status);
+    }
+
+    setFilteredAdmins(filtered);
+  };
+
+  const handleProfileClick = () => {
+    navigate("/userprofile");
+  };
+
   return (
     <section className="flex flex-col gap-6">
+      {/* Header Section */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">Admins</h1>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-            <Search className="font-thin" size={15} />
+            <Search size={15} />
             <input
               type="search"
-              placeholder="Search admins"
+              placeholder="Search by Name"
+              value={searchTerm}
+              onChange={handleSearch}
               className="outline-none bg-transparent"
             />
           </div>
@@ -75,7 +113,10 @@ export default function Admins() {
           <Button size="icon" className="bg-white text-neutral-700">
             <Settings size={20} />
           </Button>
-          <div className="flex items-center gap-3">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={handleProfileClick}
+          >
             <div className="w-10 h-10 bg-orange-400/50 rounded-xl" />
             <div>
               <p className="text-sm">Martin Septimus</p>
@@ -85,6 +126,26 @@ export default function Admins() {
           </div>
         </div>
       </div>
+
+      {/* Filter Section */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {["All", "Active", "Pending", "Inactive"].map((status) => (
+            <button
+              key={status}
+              onClick={() => handleStatusFilter(status)}
+              className={`flex items-center gap-1 ${
+                statusFilter === status ? "font-bold" : "text-neutral-400"
+              }`}
+            >
+              <Filter />
+              <span className="text-sm">{status}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Table Section */}
       <div className="bg-white rounded-xl">
         <Table>
           <TableHeader>
@@ -97,7 +158,7 @@ export default function Admins() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {admins.map((admin) => (
+            {filteredAdmins.map((admin) => (
               <TableRow key={admin.adminId} className="text-sm">
                 <TableCell>
                   <Link to={`${admin.adminId}`} className="font-medium">

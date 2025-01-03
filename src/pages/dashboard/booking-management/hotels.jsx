@@ -106,6 +106,10 @@ export default function Hotels() {
     setEditingBooking(null);
   };
 
+  const handleProfileClick = () => {
+    navigate("/userprofile");
+  };
+
   return (
     <section className="flex flex-col gap-6">
       {/* Header with Profile */}
@@ -131,7 +135,7 @@ export default function Hotels() {
           <Button size="icon" className="bg-white text-neutral-700">
             <Settings size={20} />
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={handleProfileClick}>
             <div className="w-10 h-10 bg-orange-400/50 rounded-xl" />
             <div>
               <p className="text-sm">Martin Septimus</p>
@@ -144,16 +148,6 @@ export default function Hotels() {
 
       {/* Filters */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-          <Search size={15} />
-          <input
-            type="search"
-            placeholder="Search by customer name"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="outline-none bg-transparent"
-          />
-        </div>
         <div className="flex items-center gap-4">
           {["All", "Confirmed", "Pending", "Cancelled"].map((status) => (
             <button
@@ -217,8 +211,8 @@ export default function Hotels() {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <Button >
-                    <Eye size={15}  /> View
+                  <Button>
+                    <Eye size={15} /> View
                   </Button>
                   <Button>
                     <Download size={15} /> Download
@@ -227,11 +221,6 @@ export default function Hotels() {
                     <Edit size={15} /> Edit
                   </Button>
                 </TableCell>
-                {/* <TableCell>
-                  <Button onClick={() => handleEditBooking(booking)}>
-                    <Edit size={15} /> Edit
-                  </Button>
-                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>
@@ -259,6 +248,36 @@ export default function Hotels() {
                 type="text"
                 name="hotelName"
                 value={editingBooking.hotelName}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Check-in Date</label>
+              <input
+                type="date"
+                name="checkInDate"
+                value={editingBooking.checkInDate}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Check-out Date</label>
+              <input
+                type="date"
+                name="checkOutDate"
+                value={editingBooking.checkOutDate}
+                onChange={handleEditChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm mb-1">Total Guests</label>
+              <input
+                type="number"
+                name="totalGuests"
+                value={editingBooking.totalGuests}
                 onChange={handleEditChange}
                 className="w-full p-2 border rounded-md"
               />

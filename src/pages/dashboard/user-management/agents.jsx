@@ -1,10 +1,13 @@
 import { Button } from "../../../components/ui/button";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BellDot,
   ChevronDown,
   CircleHelp,
   Search,
   Settings,
+  Filter,
 } from "lucide-react";
 import {
   Table,
@@ -49,23 +52,58 @@ const agents = [
     region: "Mexico City, Mexico",
     status: "Active",
   },
-  // Add more agent details as necessary
 ];
 
 export default function Agents() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [filteredAgents, setFilteredAgents] = useState(agents);
+
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    filterAgents(term, statusFilter);
+  };
+
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+    filterAgents(searchTerm, status);
+  };
+
+  const filterAgents = (nameTerm, status) => {
+    let filtered = agents.filter((agent) =>
+      agent.name.toLowerCase().includes(nameTerm.toLowerCase())
+    );
+
+    if (status !== "All") {
+      filtered = filtered.filter((agent) => agent.status === status);
+    }
+
+    setFilteredAgents(filtered);
+  };
+
+  const handleProfileClick = () => {
+    navigate("/userprofile");
+  };
+
   return (
     <section className="flex flex-col gap-6">
+      {/* Header Section */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">Agents</h1>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-            <Search className="font-thin" size={15} />
-            <input
-              type="search"
-              placeholder="Search agents"
-              className="outline-none bg-transparent"
-            />
-          </div>
+        <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
+          <Search size={15} />
+          <input
+            type="search"
+            placeholder="Search by Name"
+            value={searchTerm}
+            onChange={handleSearch}
+            className="outline-none bg-transparent"
+          />
+        </div>
           <Button size="icon" className="bg-white text-neutral-700">
             <BellDot size={20} />
           </Button>
@@ -75,7 +113,10 @@ export default function Agents() {
           <Button size="icon" className="bg-white text-neutral-700">
             <Settings size={20} />
           </Button>
-          <div className="flex items-center gap-3">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={handleProfileClick}
+          >
             <div className="w-10 h-10 bg-orange-400/50 rounded-xl" />
             <div>
               <p className="text-sm">Martin Septimus</p>
@@ -85,6 +126,27 @@ export default function Agents() {
           </div>
         </div>
       </div>
+
+      {/* Filter Section */}
+      <div className="flex items-center justify-between">
+        
+        <div className="flex items-center gap-4">
+          {["All", "Active", "Pending", "Inactive"].map((status) => (
+            <button
+              key={status}
+              onClick={() => handleStatusFilter(status)}
+              className={`flex items-center gap-1 ${
+                statusFilter === status ? "font-bold" : "text-neutral-400"
+              }`}
+            >
+              <Filter />
+              <span className="text-sm">{status}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Table Section */}
       <div className="bg-white rounded-xl">
         <Table>
           <TableHeader>
@@ -97,7 +159,7 @@ export default function Agents() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {agents.map((agent) => (
+            {filteredAgents.map((agent) => (
               <TableRow key={agent.agentId} className="text-sm">
                 <TableCell>
                   <Link to={`${agent.agentId}`} className="font-medium">

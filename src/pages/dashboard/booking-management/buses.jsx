@@ -90,6 +90,7 @@ export default function Buses() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBookings, setFilteredBookings] = useState(bookings);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [editingBooking, setEditingBooking] = useState(null);
 
   // Handle search specifically by Bus No and Customer Name
   const handleSearch = (e) => {
@@ -98,11 +99,33 @@ export default function Buses() {
     filterBookings(term, statusFilter);
   };
 
+  const handleSaveBooking = () => {
+    setFilteredBookings((prev) =>
+      prev.map((booking) =>
+        booking.booking === editingBooking.booking ? editingBooking : booking
+      )
+    );
+    setEditingBooking(null);
+    alert("Booking updated successfully!");
+  };
+
+  const handleCloseModal = () => {
+    setEditingBooking(null);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditingBooking((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleEditBooking = (booking) => {
     setEditingBooking({ ...booking });
   };
 
   const navigate = useNavigate();
+  const handleProfileClick = () => {
+    navigate("/userprofile");
+  };
 
 
   // Filter bookings by Bus No, Customer Name, and Status
@@ -126,15 +149,16 @@ export default function Buses() {
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">Buses</h1>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-            <Search className="font-thin" size={15} />
-            <input
-              type="search"
-              placeholder="Search"
-              value={searchTerm}
-              className="outline-none bg-transparent"
-            />
-          </div>
+        <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
+          <Search className="font-thin" size={15} />
+          <input
+            type="search"
+            placeholder="Search by bus no or customer name"
+            value={searchTerm}
+            onChange={handleSearch}
+            className="outline-none bg-transparent"
+          />
+        </div>
           <Button size="icon" className="bg-white text-neutral-700">
             <BellDot size={20} />
           </Button>
@@ -144,7 +168,8 @@ export default function Buses() {
           <Button size="icon" className="bg-white text-neutral-700">
             <Settings size={20} />
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer"             onClick={handleProfileClick}
+          >
             <div className="w-10 h-10 bg-orange-400/50 rounded-xl" />
             <div>
               <p className="text-sm">Martin Septimus</p>
@@ -156,16 +181,7 @@ export default function Buses() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-          <Search className="font-thin" size={15} />
-          <input
-            type="search"
-            placeholder="Search by bus no or customer name"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="outline-none bg-transparent"
-          />
-        </div>
+        
         <div className="flex items-center gap-4">
           {["All", "Confirmed", "Pending", "Cancelled"].map((status) => (
             <button
@@ -184,7 +200,7 @@ export default function Buses() {
             <span className="text-sm">1-8 July 2024</span>
             <ChevronDown size={14} />
           </button>
-          <Button className="flex items-center gap-3" onClick={() => navigate("/dashboard/booking-management/addbus")}>
+          <Button className="flex items-center gap-3" onClick={() => navigate("/dashboard/booking-management/addbuses")}>
             <Plus size={15} />
             Add booking
           </Button>
@@ -249,6 +265,101 @@ export default function Buses() {
           </TableBody>
         </Table>
       </div>
+      {editingBooking && (
+  <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-xl w-1/3">
+      <h2 className="text-lg font-semibold mb-4">Edit Booking</h2>
+      
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Customer Name</label>
+        <input
+          type="text"
+          name="customerName"
+          value={editingBooking.customerName}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Bus No</label>
+        <input
+          type="text"
+          name="busNo"
+          value={editingBooking.busNo}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Company</label>
+        <input
+          type="text"
+          name="company"
+          value={editingBooking.company}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Route</label>
+        <input
+          type="text"
+          name="route"
+          value={editingBooking.route}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Departure</label>
+        <input
+          type="text"
+          name="departure"
+          value={editingBooking.departure}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Arrival</label>
+        <input
+          type="text"
+          name="arrival"
+          value={editingBooking.arrival}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Date</label>
+        <input
+          type="date"
+          name="date"
+          value={editingBooking.date}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm mb-1">Total Passengers</label>
+        <input
+          type="number"
+          name="totalPassengers"
+          value={editingBooking.totalPassengers}
+          onChange={handleEditChange}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+     
+      <div className="flex gap-4">
+        <Button onClick={handleSaveBooking}>Save</Button>
+        <Button onClick={handleCloseModal}>Cancel</Button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </section>
   );
 }

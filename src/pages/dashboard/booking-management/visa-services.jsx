@@ -87,6 +87,9 @@ export default function VisaServices() {
     setFilteredApplications(filtered);
   };
 
+  const handleProfileClick = () => {
+    navigate("/userprofile");
+  };
   // Handle status filter change
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -117,7 +120,7 @@ export default function VisaServices() {
           <Button size="icon" className="bg-white text-neutral-700">
             <Settings size={20} />
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3  cursor-pointer" onClick={handleProfileClick}>
             <div className="w-10 h-10 bg-orange-400/50 rounded-xl" />
             <div>
               <p className="text-sm">Martin Septimus</p>
@@ -129,16 +132,7 @@ export default function VisaServices() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 bg-white rounded-xl p-2 text-neutral-400 text-sm">
-          <Search className="font-thin" size={15} />
-          <input
-            type="search"
-            placeholder="Search anything"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="outline-none bg-transparent"
-          />
-        </div>
+        
         <div className="flex items-center gap-4">
           {["All", "Approved", "Pending", "Rejected"].map((status) => (
             <button
@@ -158,7 +152,7 @@ export default function VisaServices() {
             <span className="text-sm">1-8 July 2024</span>
             <ChevronDown size={14} />
           </button>
-          <Button className="flex items-center gap-3" onClick={() => navigate("/dashboard/booking-management/addvisaservice")}>
+          <Button className="flex items-center gap-3" onClick={() => navigate("/dashboard/booking-management/addvisa_services")}>
             <Plus size={15} />
             Add Application
           </Button>
