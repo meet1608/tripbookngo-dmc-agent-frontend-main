@@ -1,9 +1,11 @@
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const staticUser = {
     email: "user@gmail.com",
@@ -18,31 +20,32 @@ export default function Login() {
 
     if (email === staticUser.email && password === staticUser.password) {
       alert("Login successful!");
-      localStorage.setItem("user", JSON.stringify(staticUser)); // Save user data
+      localStorage.setItem("user", JSON.stringify(staticUser)); 
       navigate("/dashboard");
     }
   };
 
   return (
     <main className="w-full h-screen flex items-center justify-center bg-gray-100">
-      <div className="flex max-w-5xl w-full bg-white rounded-lg shadow-md overflow-hidden">
-        {/* Left Section with Image */}
-        <div className="hidden lg:flex flex-col justify-center items-center w-1/2 bg-gray-200">
-          <img
-            src="/flight.jpg"
-            alt="Illustration"
-            className="object-cover w-full h-full"
-          />
-        </div>
+      <div className="flex w-full h-full bg-white rounded-lg shadow-md overflow-hidden">
+       
+      <div className="w-1/2 hidden lg:flex flex-col justify-center items-center bg-gray-200">
+  <img
+    src="/flight.jpg"
+    alt="Illustration"
+    className="object-cover w-full h-full min-h-full object-left"
+  />
+</div>
 
-        {/* Right Section with Login Form */}
-        <div className="w-full lg:w-1/2 p-8">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-800">Log in to your account</h3>
+
+        
+        <div className="w-full lg:w-1/2 p-8 flex flex-col justify-center items-center">
+          <div className="text-center mb-8 w-full">
+            <h3 className="text-4xl font-bold text-gray-800">Welcome Back !</h3>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-sm">
             <div>
-              <label className="block font-medium text-gray-700">Email</label>
+              <label className="block font-medium text-xl text-gray-700">Email</label>
               <input
                 type="email"
                 name="email"
@@ -52,34 +55,58 @@ export default function Login() {
               />
             </div>
             <div>
-              <label className="block font-medium text-gray-700">Password</label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                required
-                className="w-full mt-2 border-b-2 border-gray-300 focus:outline-none focus:border-gray-800"
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input type="checkbox" id="remember" className="mr-2" />
-                <label htmlFor="remember" className="text-gray-600">Remember for 30 days</label>
+              <label className="block font-medium text-xl text-gray-700">Password</label>
+              <div className="relative">
+                <input
+                  type={passwordVisible ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                  className="w-full mt-2 border-b-2 border-gray-300 focus:outline-none focus:border-gray-800"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {passwordVisible ? (
+                    <FaEye className="text-gray-600" />
+                  ) : (
+                    <FaEyeSlash className="text-gray-600" />
+                  )}
+                </button>
               </div>
-              <Link to="/forgot-password" className="text-blue-500 text-sm">
+            </div>
+
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  className="peer w-4 h-4 border-2 border-gray-600 rounded-sm focus:outline-none focus:ring-0 checked:bg-black checked:border-black"
+                />
+                <label
+                  htmlFor="remember"
+                  className="ml-2 text-gray-600 peer-checked:text-black"
+                >
+                  Remember for 30 days
+                </label>
+              </div>
+              <Link to="/forgot-password" className="text-gray-500 text-sm">
                 Forgot password?
               </Link>
             </div>
 
-            <Button type="submit" className="w-full py-3 bg-gray-800 text-white rounded-lg">
+            
+            <Button type="submit" className="w-full py-5 bg-gray-800 text-white  rounded-full mt-6">
               Log In
             </Button>
 
-            <Button className="w-full py-3 bg-white text-gray-800 border border-gray-300 rounded-lg flex items-center justify-center space-x-2">
-              <img src="/path-to-google-icon.png" alt="Google" className="w-5 h-5" />
-              <span>Log in with Google</span>
+            <Button className="w-full py-5 bg-white text-gray-800 border border-gray-300 rounded-full flex items-center justify-center space-x-2 mt-4">
+              <img src="/goggle.png" alt="Google" className="w-5 h-5" />
+              <span className="font-bold">Log in with Google</span>
             </Button>
-          </form>
+          </form><br /><br />
 
           <p className="text-center mt-6 text-gray-600">
             Don’t have an account?{' '}
